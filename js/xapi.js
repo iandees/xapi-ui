@@ -1,14 +1,26 @@
 $(document).ready(function() {
 
   // Set up the map
-  var map = new OpenLayers.Map('bboxmap');
+  var map = new OpenLayers.Map('bboxmap', 
+                               {projection: "EPSG:900913",});
   var osm = new OpenLayers.Layer.OSM.Mapnik("Mapnik", {
     attribution: ''
   });
+  var bounds;
 
+  // We'll use these projections in our functions later
+  var goog =  new OpenLayers.Projection("EPSG:900913");
+  var cords = new OpenLayers.Projection("EPSG:4326")
   map.addLayer(osm);
   map.zoomTo(1);
 
+  $('#bboxmap').click(function() {
+    bounds = map.getExtent().transform(goog, cords);
+    $('#bbox_top').val(bounds.top);
+    $('#bbox_bottom').val(bounds.bottom);
+    $('#bbox_left').val(bounds.left);
+    $('#bbox_right').val(bounds.right);
+  });
   
   // Set up some other basics
   var baseurl = "http://xapi-server"
@@ -40,9 +52,6 @@ $(document).ready(function() {
     };
     $('#results').text(results);
   };
-
-  update_results();
-  
 
   // Set up some UI element functions
   $("#searchbytag").click(function() {
@@ -82,5 +91,8 @@ $(document).ready(function() {
   $('#bbox_bottom').keyup(function() { update_results();});
   $('#bbox_left').keyup(function() { update_results();});
   $('#bbox_right').keyup(function() { update_results();});
-  
+
+  // Do the initial setup
+
+    update_results();
 });
