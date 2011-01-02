@@ -6,7 +6,6 @@ $(document).ready(function() {
   var osm = new OpenLayers.Layer.OSM.Mapnik("Mapnik", {
     attribution: ''
   });
-  var bounds;
 
   // We'll use these projections in our functions later
   var goog =  new OpenLayers.Projection("EPSG:900913");
@@ -14,8 +13,8 @@ $(document).ready(function() {
   map.addLayer(osm);
   map.zoomTo(1);
 
-  $('#bboxmap').click(function() {
-    bounds = map.getExtent().transform(goog, latlon);
+  map.events.register('move', map, function() {
+    var bounds = map.getExtent().transform(goog, latlon);
     $('#bbox_top').val(bounds.top);
     $('#bbox_bottom').val(bounds.bottom);
     $('#bbox_left').val(bounds.left);
@@ -56,12 +55,12 @@ $(document).ready(function() {
   };
 
   var update_bbox = function() {
-    var newbounds = new OpenLayers.Bounds( parseFloat($('#bbox_left').val()),
+    var bounds = new OpenLayers.Bounds( parseFloat($('#bbox_left').val()),
                                            parseFloat($('#bbox_bottom').val()),
                                            parseFloat($('#bbox_right').val()),
                                            parseFloat($('#bbox_top').val()));
-    newbounds.transform(latlon, goog);
-    map.zoomToExtent(newbounds, true)
+    bounds.transform(latlon, goog);
+    map.zoomToExtent(bounds, true)
     };
     
   // Set up some UI element functions
