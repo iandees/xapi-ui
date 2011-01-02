@@ -10,12 +10,12 @@ $(document).ready(function() {
 
   // We'll use these projections in our functions later
   var goog =  new OpenLayers.Projection("EPSG:900913");
-  var cords = new OpenLayers.Projection("EPSG:4326")
+  var latlon = new OpenLayers.Projection("EPSG:4326")
   map.addLayer(osm);
   map.zoomTo(1);
 
   $('#bboxmap').click(function() {
-    bounds = map.getExtent().transform(goog, cords);
+    bounds = map.getExtent().transform(goog, latlon);
     $('#bbox_top').val(bounds.top);
     $('#bbox_bottom').val(bounds.bottom);
     $('#bbox_left').val(bounds.left);
@@ -55,6 +55,15 @@ $(document).ready(function() {
     $('#results').attr('href', results);
   };
 
+  var update_bbox = function() {
+    var newbounds = new OpenLayers.Bounds( parseFloat($('#bbox_left').val()),
+                                           parseFloat($('#bbox_bottom').val()),
+                                           parseFloat($('#bbox_right').val()),
+                                           parseFloat($('#bbox_top').val()));
+    newbounds.transform(latlon, goog);
+    map.zoomToExtent(newbounds, true)
+    };
+    
   // Set up some UI element functions
   $("#searchbytag").click(function() {
     if ( $(this).is(':checked') ) {
@@ -89,10 +98,18 @@ $(document).ready(function() {
     update_results();
   });
 
-  $('#bbox_top').keyup(function() { update_results();});
-  $('#bbox_bottom').keyup(function() { update_results();});
-  $('#bbox_left').keyup(function() { update_results();});
-  $('#bbox_right').keyup(function() { update_results();});
+  $('#bbox_top').change(function() {
+    update_bbox();
+    update_results();});
+  $('#bbox_bottom').change(function() {
+    update_bbox();
+    update_results();});
+  $('#bbox_left').change(function() {
+    update_bbox();
+    update_results();});
+  $('#bbox_right').change(function() {
+    update_bbox();
+    update_results();});
 
   // Do the initial setup
 
