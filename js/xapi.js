@@ -51,6 +51,7 @@ $(document).ready(function() {
         results = results + 'map?' + bbox(); }
     };
     $('#results').text(results);
+    $('#results').attr('href', results);
   };
 
   // Set up some UI element functions
