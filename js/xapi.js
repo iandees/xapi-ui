@@ -20,6 +20,7 @@ $(document).ready(function() {
     $('#bbox_bottom').val(bounds.bottom);
     $('#bbox_left').val(bounds.left);
     $('#bbox_right').val(bounds.right);
+    update_results();
   });
   
   // Set up some other basics
