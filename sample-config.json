@@ -1,0 +1,4 @@
+{ "baseurl": "http://newbaseurl.com",
+  "tileurl": "http://otile1.mqcdn.com/tiles/1.0.0/osm/",
+  "attribution": "Put attribution here (off the map)"
+}
