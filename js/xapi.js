@@ -1,18 +1,14 @@
 $(document).ready(function() {
-
+  // Set up some basics
+  var baseurl = '';
   // Set up the map
-  var map = new OpenLayers.Map('bboxmap', 
-                               {projection: "EPSG:900913",});
-  var osm = new OpenLayers.Layer.OSM.Mapnik("Mapnik", {
-    attribution: ''
-  });
-
-  // We'll use these projections in our functions later
-  var goog =  new OpenLayers.Projection("EPSG:900913");
-  var latlon = new OpenLayers.Projection("EPSG:4326")
-  map.addLayer(osm);
-  map.zoomTo(1);
-
+  map = new OpenLayers.Map('bboxmap', 
+                           {projection: "EPSG:900913",});
+  // var osm = new OpenLayers.Layer.OSM("bboxmap", "http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png", {attribution: '', numZoomLevels: 19});
+ //  map.addLayer(osm);
+    // Do the initial setup
+  
+  // Register the move event (update the page when the map moves)
   map.events.register('move', map, function() {
     var bounds = map.getExtent().transform(goog, latlon);
     $('#bbox_top').val(bounds.top);
@@ -21,11 +17,12 @@ $(document).ready(function() {
     $('#bbox_right').val(bounds.right);
     update_results();
   });
-  
-  // Set up some other basics
-  var baseurl = "http://xapi-server"
 
-  // Basic update functions
+  // We'll use these projections in our functions later
+  var goog =  new OpenLayers.Projection("EPSG:900913");
+  var latlon = new OpenLayers.Projection("EPSG:4326")
+
+  // Function to return proper tag search string
   var tagsearch = function() {
     if($("#searchbytag").is(':checked')) {
       t = $('#element').val() + '[' + $('#tag').val() + ']';
@@ -34,12 +31,24 @@ $(document).ready(function() {
     return t;
   };
 
+  // Function to return a bbox string
   var bbox = function() {
     var b = 'bbox=' + $('#bbox_left').val() + ',' + $('#bbox_bottom').val() +
       ',' + $('#bbox_right').val() + ',' + $('#bbox_top').val();
     return b;
   }
-  
+
+  // Update the bbox from the text to the map
+  var update_bbox = function() {
+    var bounds = new OpenLayers.Bounds( parseFloat($('#bbox_left').val()),
+                                           parseFloat($('#bbox_bottom').val()),
+                                           parseFloat($('#bbox_right').val()),
+                                           parseFloat($('#bbox_top').val()));
+    bounds.transform(latlon, goog);
+    map.zoomToExtent(bounds, true)
+    };
+
+  // Function to update the display on the page  
   var update_results = function() {
     var results = baseurl + '/' ;
     if ($('#searchbytag').is(':checked')) {
@@ -53,15 +62,6 @@ $(document).ready(function() {
     $('#results').text(results);
     $('#results').attr('href', results);
   };
-
-  var update_bbox = function() {
-    var bounds = new OpenLayers.Bounds( parseFloat($('#bbox_left').val()),
-                                           parseFloat($('#bbox_bottom').val()),
-                                           parseFloat($('#bbox_right').val()),
-                                           parseFloat($('#bbox_top').val()));
-    bounds.transform(latlon, goog);
-    map.zoomToExtent(bounds, true)
-    };
     
   // Set up some UI element functions
   $("#searchbytag").click(function() {
@@ -101,7 +101,7 @@ $(document).ready(function() {
     update_bbox();
     update_results();});
   $('#bbox_bottom').change(function() {
-    update_bbox();
+  http://a.tile.openstreetmap.org/  update_bbox();
     update_results();});
   $('#bbox_left').change(function() {
     update_bbox();
@@ -110,7 +110,18 @@ $(document).ready(function() {
     update_bbox();
     update_results();});
 
-  // Do the initial setup
-
+  $.getJSON("config.json", function(json) {
+    baseurl = json.baseurl;
+    tileurl = json.tileurl;
+    attribution = json.attribution;
+    
+    var osm = new OpenLayers.Layer.OSM("bboxmap",
+                                       tileurl + "${z}/${x}/${y}.png",
+                                       {attribution: ''});
+    $('#attribution').text(attribution);
+    map.addLayer(osm);
+    map.zoomTo(1);
     update_results();
+  });
+
 });
