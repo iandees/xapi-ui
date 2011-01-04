@@ -8,7 +8,7 @@ While this services does not explicitly require running an XAPI
 service, it is recommended to point the service only at your own XAPI
 server in order to minimize traffic impact.
 
-== Installation
+Installation:
 
 XAPI-UI runs entirely client-side and has no server executable
 components. To install, simply copy the file files in the repository
@@ -18,13 +18,13 @@ store your settings.
 One may optionally redirect the index page of a site to the xapi.html
 page.
 
-= Configuration
+Configuration:
 
 You must have `config.json` file which contains configuration for the
 site installation. You may use the `config-sample.json` file as a
 starting point.
 
-= Customization
+Customization:
 
 The HTML and CSS are entirely customizable, but the div IDs must
 remain the same in order for the javascript (which runs the service)
