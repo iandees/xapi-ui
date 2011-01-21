@@ -28,15 +28,13 @@ $(document).ready(function() {
     notice: function (bounds) {
       var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
       var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
-      var bboxGeom = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat).toGeometry();
-      bboxVectors.removeAllFeatures();
-      bboxVectors.addFeatures([new OpenLayers.Feature.Vector(bboxGeom)]);
       var llLat = ll.transform(map.getProjectionObject(), latlon);
       var urLat = ur.transform(map.getProjectionObject(), latlon);
       $('#bbox_left').val(llLat.lon.toFixed(5));
       $('#bbox_bottom').val(llLat.lat.toFixed(5));
       $('#bbox_right').val(urLat.lon.toFixed(5));
       $('#bbox_top').val(urLat.lat.toFixed(5));
+      update_bbox();
     }
   });
   map.addControl(control);
@@ -60,11 +58,14 @@ $(document).ready(function() {
   // Update the bbox from the text to the map
   var update_bbox = function() {
     var bounds = new OpenLayers.Bounds( parseFloat($('#bbox_left').val()),
-                                           parseFloat($('#bbox_bottom').val()),
-                                           parseFloat($('#bbox_right').val()),
-                                           parseFloat($('#bbox_top').val()));
+                                        parseFloat($('#bbox_bottom').val()),
+                                        parseFloat($('#bbox_right').val()),
+                                        parseFloat($('#bbox_top').val()));
     bounds.transform(latlon, goog);
-    map.zoomToExtent(bounds, true)
+    
+    var bboxGeom = bounds.toGeometry();
+    bboxVectors.removeAllFeatures();
+    bboxVectors.addFeatures([new OpenLayers.Feature.Vector(bboxGeom)]);
     };
 
   // Function to update the display on the page  
