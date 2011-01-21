@@ -120,7 +120,7 @@ $(document).ready(function() {
     update_bbox();
     update_results();});
   $('#bbox_bottom').change(function() {
-  http://a.tile.openstreetmap.org/  update_bbox();
+    update_bbox();
     update_results();});
   $('#bbox_left').change(function() {
     update_bbox();
