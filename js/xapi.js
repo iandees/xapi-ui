@@ -8,19 +8,38 @@ $(document).ready(function() {
  //  map.addLayer(osm);
     // Do the initial setup
   
-  // Register the move event (update the page when the map moves)
-  map.events.register('move', map, function() {
-    var bounds = map.getExtent().transform(goog, latlon);
-    $('#bbox_top').val(bounds.top);
-    $('#bbox_bottom').val(bounds.bottom);
-    $('#bbox_left').val(bounds.left);
-    $('#bbox_right').val(bounds.right);
-    update_results();
-  });
-
   // We'll use these projections in our functions later
   var goog =  new OpenLayers.Projection("EPSG:900913");
-  var latlon = new OpenLayers.Projection("EPSG:4326")
+  var latlon = new OpenLayers.Projection("EPSG:4326");
+
+  var bboxVectors = new OpenLayers.Layer.Vector("Bounding Box");
+  map.addLayer(bboxVectors);
+  var control = new OpenLayers.Control();
+  OpenLayers.Util.extend(control, {
+    draw: function () {
+      // this Handler.Box will intercept the shift-mousedown
+      // before Control.MouseDefault gets to see it
+      this.box = new OpenLayers.Handler.Box( control,
+          {"done": this.notice},
+          {keyMask: OpenLayers.Handler.MOD_SHIFT});
+      this.box.activate();
+    },
+
+    notice: function (bounds) {
+      var ll = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.left, bounds.bottom)); 
+      var ur = map.getLonLatFromPixel(new OpenLayers.Pixel(bounds.right, bounds.top)); 
+      var bboxGeom = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat).toGeometry();
+      bboxVectors.removeAllFeatures();
+      bboxVectors.addFeatures([new OpenLayers.Feature.Vector(bboxGeom)]);
+      var llLat = ll.transform(map.getProjectionObject(), latlon);
+      var urLat = ur.transform(map.getProjectionObject(), latlon);
+      $('#bbox_left').val(llLat.lon.toFixed(5));
+      $('#bbox_bottom').val(llLat.lat.toFixed(5));
+      $('#bbox_right').val(urLat.lon.toFixed(5));
+      $('#bbox_top').val(urLat.lat.toFixed(5));
+    }
+  });
+  map.addControl(control);
 
   // Function to return proper tag search string
   var tagsearch = function() {
