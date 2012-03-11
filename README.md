@@ -22,7 +22,7 @@ page.
 Configuration
 -------------
 You must have `config.json` file which contains configuration for the
-site installation. You may use the `config-sample.json` file as a
+site installation. You may use the `sample-config.json` file as a
 starting point.
 
 Customization
